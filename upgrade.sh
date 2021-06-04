@@ -12,6 +12,15 @@ if [ -z "${NODE_NAME}" ]; then
   export NODE_NAME=$(scripts/resolve-ip.sh eth0)
 fi
 
-docker-compose -f docker-compose-full-system.yml down
-docker-compose -f docker-compose-full-system.yml pull
-docker-compose -f docker-compose-full-system.yml up -d
+rm -f envfile
+touch envfile
+# trigger-upgrade.sh might pass us an env file
+if [ -n "$1" ]; then
+  mv -f "$1" envfile
+fi
+
+# for any unset *_TAG env vars, the docker-compose yml falls back to "latest"
+
+docker-compose --env-file envfile -f docker-compose-full-system.yml down
+docker-compose --env-file envfile -f docker-compose-full-system.yml pull
+docker-compose --env-file envfile -f docker-compose-full-system.yml up -d
