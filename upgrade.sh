@@ -25,6 +25,10 @@ fi
 
 # for any unset *_TAG env vars, the docker-compose yml falls back to "latest"
 
+if ! docker-compose --env-file envfile -f docker-compose-full-system.yml pull; then
+  printf "upgrade aborted, some non-existent tag?\n"
+  exit 1
+fi
+
 docker-compose --env-file envfile -f docker-compose-full-system.yml down
-docker-compose --env-file envfile -f docker-compose-full-system.yml pull
 docker-compose --env-file envfile -f docker-compose-full-system.yml up -d
